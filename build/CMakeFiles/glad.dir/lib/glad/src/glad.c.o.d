@@ -1,5 +1,5 @@
 CMakeFiles/glad.dir/lib/glad/src/glad.c.o: \
-  /Users/patrick/Dev/COMP426_A1/lib/glad/src/glad.c \
+  /Users/patrick/Dev/COMP426/lib/glad/src/glad.c \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/stdio.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/_stdio.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/_bounds.h \
@@ -92,7 +92,7 @@ CMakeFiles/glad.dir/lib/glad/src/glad.c.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/_strings.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/secure/_strings.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/secure/_string.h \
-  /Users/patrick/Dev/COMP426_A1/lib/glad/include/glad/glad.h \
-  /Users/patrick/Dev/COMP426_A1/lib/glad/include/KHR/khrplatform.h \
+  /Users/patrick/Dev/COMP426/lib/glad/include/glad/glad.h \
+  /Users/patrick/Dev/COMP426/lib/glad/include/KHR/khrplatform.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/dlfcn.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdbool.h

@@ -15,6 +15,7 @@ endif()
 
 find_package(OpenGL REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)   # via Homebrew
+find_package(TBB CONFIG REQUIRED)
 
 # ---- Vendored GLAD (no find_package(glad)) ----
 # Expecting files at:
@@ -27,7 +28,8 @@ target_include_directories(glad PUBLIC lib/glad/include)
 # ---- Your app ----
 add_executable(game src/main.cpp src/sim.cpp)
 target_include_directories(game PRIVATE lib/glad/include src)
-target_link_libraries(game PRIVATE glad glfw OpenGL::GL)
+target_link_libraries(game PRIVATE TBB::tbb glfw OpenGL::GL glad)
+
 
 if(APPLE)
   target_compile_definitions(game PRIVATE MAC_OS_X_VERSION_MIN_REQUIRED=101500)

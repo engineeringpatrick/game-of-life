@@ -1,7 +1,10 @@
 #include "sim.hpp"
+#include <random>
+#include <tbb/parallel_for.h>
+#include <tbb/blocked_range.h>
 
 Sim::Sim(const SimConfig& cfg)
-: W_(cfg.width), H_(cfg.height), S_(cfg.species), T_(cfg.workers)
+: W_(cfg.width), H_(cfg.height), S_(cfg.species)
 {
     layers_curr_.resize(S_, std::vector<uint8_t>(W_*H_, 0));
     layers_next_.resize(S_, std::vector<uint8_t>(W_*H_, 0));
@@ -17,41 +20,33 @@ Sim::Sim(const SimConfig& cfg)
     }
 }
 
+std::mt19937 Sim::gen_{ std::random_device{}() };
+
 void Sim::swap_buffers() {
     for (int s = 0; s < S_; ++s) {
         std::swap(layers_curr_[s], layers_next_[s]);
     }
 }
 
-void Sim::step_rows(int y0, int y1) {
-    while (running()) {
-        for (int s = 0; s < S_; ++s) {
-            const auto& cur = layers_curr_[s];
-            auto& nxt = layers_next_[s];
-            for (int y = y0; y < y1; ++y) {
-                int base = y * W_;
-                for (int x = 0; x < W_; ++x) {
-                    uint8_t alive = cur[base + x];
-                    uint8_t n = neighbor_count(cur, x, y);
-                    uint8_t out = 0;
-                    if (alive) {
-                        // survives on 2 or 3
-                        out = (n == 2 || n == 3) ? 1u : 0u;
-                    } else {
-                        // birth on exactly 3
-                        out = (n == 3) ? 1u : 0u;
+void Sim::update_frame_tbb() {
+    for (int s = 0; s < S_; ++s) {
+        const auto& cur = layers_curr_[s];
+        auto& nxt = layers_next_[s];
+
+        tbb::parallel_for(
+            tbb::blocked_range<int>(0, H_, 64),  // grain size 64 rows 
+            [&](const tbb::blocked_range<int>& r){
+                for (int y = r.begin(); y < r.end(); ++y) {
+                    int base = y * W_;
+                    for (int x = 0; x < W_; ++x) {
+                        uint8_t a = cur[base + x];
+                        uint8_t n = neighbor_count(cur, x, y);
+                        nxt[base + x] = a ? (n == 2 || n == 3) : (n == 3);
                     }
-                    nxt[base + x] = out;
                 }
             }
-        }
-        // main thread's completion fun swaps buffers
-        barrier->arrive_and_wait();
+        );
     }
-}
-
-void Sim::join_barrier() {
-    barrier->arrive_and_wait();
 }
 
 void Sim::blit_rgba(std::vector<unsigned char>& out_rgba) {
@@ -69,16 +64,16 @@ void Sim::blit_rgba(std::vector<unsigned char>& out_rgba) {
         return {c[0], c[1], c[2], 255};
     };
 
-    // highest species id wins (draw priority)
     for (int y = 0; y < H_; ++y) {
         for (int x = 0; x < W_; ++x) {
             int i = idx(x,y);
-            int winner = -1;
+            // choose winner at random!
+            std::vector<int> winners;
             for (int s = 0; s < S_; ++s) {
-                // todo: choose one at random
-                if (layers_curr_[s][i]) winner = s; // later (higher id) overwrites
+                if (layers_curr_[s][i]) winners.push_back(s);
             }
-            if (winner >= 0) {
+            if (!winners.empty()) {
+                int winner = winners[std::uniform_int_distribution<std::size_t>(0, winners.size() - 1)(gen_)];
                 auto rgba = color_of(winner);
                 int p = i*4;
                 out_rgba[p+0] = rgba[0];
@@ -89,5 +84,3 @@ void Sim::blit_rgba(std::vector<unsigned char>& out_rgba) {
         }
     }
 }
-
-void Sim::stop() { running_.store(false); }

@@ -68,13 +68,12 @@ static GLuint make_program() {
 }
 
 int main(int argc, char** argv) {
-    // ---- config (optional cli species, workers) ----
+    // config
     SimConfig cfg;
     if (argc > 1) cfg.species = std::clamp(std::atoi(argv[1]), 1, 10);
-    if (argc > 2) cfg.workers = std::max(1, std::atoi(argv[2]));
-    std::cout << "Species=" << cfg.species << "  Workers=" << cfg.workers << "\n";
+    std::cout << "Species=" << cfg.species << "\n";
 
-    // ---- glfw init / window ----
+    // glfw init + iwndow
     if (!glfwInit()) { std::cerr << "glfwInit failed\n"; return 1; }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -92,7 +91,6 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    // ---- gl pipeline textured fullscreen quad ----
     GLuint prog = make_program();
     glUseProgram(prog);
     GLint uTexLoc = glGetUniformLocation(prog, "uTex");
@@ -126,25 +124,9 @@ int main(int argc, char** argv) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    // ---- simulation + threads ----
+    // simulation and threads stuff
     Sim sim(cfg);
 
-    // barrier with workers + main
-    std::barrier<> barrier(cfg.workers + 1);
-    sim.barrier = &barrier;
-
-    // launch worker threads with row partitions
-    std::vector<std::thread> workers;
-    int rowsPer = sim.H() / cfg.workers, extra = sim.H() % cfg.workers, y = 0;
-    for (int t = 0; t < cfg.workers; ++t) {
-        int take = rowsPer + (t < extra ? 1 : 0);
-        int y0 = y, y1 = y + take; y = y1;
-        workers.emplace_back([&sim, y0, y1]() {
-            sim.step_rows(y0, y1);  // inside: barrier->arrive_and_wait();
-        });
-    }
-
-    // ---- frame loop @ 30 fps ----
     const auto frame_dt = std::chrono::milliseconds(33);
     std::vector<unsigned char> rgba;
     glClearColor(0.f, 0.f, 0.f, 1.f);
@@ -152,10 +134,7 @@ int main(int argc, char** argv) {
     while (!glfwWindowShouldClose(win)) {
         auto t0 = SteadyClock::now();
 
-        // synchronize with workers they just finished writing 'next'
-        barrier.arrive_and_wait();
-
-        // make 'next' -> 'curr' for this frame
+        sim.update_frame_tbb();
         sim.swap_buffers();
 
         // build rgba from current state and upload
@@ -179,12 +158,6 @@ int main(int argc, char** argv) {
         // pace to 30 fps
         std::this_thread::sleep_until(t0 + frame_dt);
     }
-
-    // ---- shutdown ----
-    sim.stop();
-    // one last sync to release workers stuck at the barrier
-    barrier.arrive_and_wait();
-    for (auto& th : workers) th.join();
 
     glDeleteTextures(1, &tex);
     glDeleteBuffers(1, &ebo);

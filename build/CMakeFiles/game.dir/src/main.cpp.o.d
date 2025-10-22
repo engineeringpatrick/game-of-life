@@ -1,7 +1,7 @@
 CMakeFiles/game.dir/src/main.cpp.o: \
-  /Users/patrick/Dev/COMP426_A1/src/main.cpp \
-  /Users/patrick/Dev/COMP426_A1/lib/glad/include/glad/glad.h \
-  /Users/patrick/Dev/COMP426_A1/lib/glad/include/KHR/khrplatform.h \
+  /Users/patrick/Dev/COMP426/src/main.cpp \
+  /Users/patrick/Dev/COMP426/lib/glad/include/glad/glad.h \
+  /Users/patrick/Dev/COMP426/lib/glad/include/KHR/khrplatform.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/c++/v1/stdint.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/c++/v1/__config \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/c++/v1/__config_site \
@@ -977,7 +977,7 @@ CMakeFiles/game.dir/src/main.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/c++/v1/__stop_token/stop_token.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/c++/v1/__thread/thread.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/c++/v1/__thread/this_thread.h \
-  /Users/patrick/Dev/COMP426_A1/src/sim.hpp \
+  /Users/patrick/Dev/COMP426/src/sim.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/c++/v1/random \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/c++/v1/__random/bernoulli_distribution.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/c++/v1/__random/uniform_real_distribution.h \

@@ -4,7 +4,7 @@
 # compile C with /Library/Developer/CommandLineTools/usr/bin/cc
 C_DEFINES = 
 
-C_INCLUDES = -I/Users/patrick/Dev/COMP426_A1/lib/glad/include
+C_INCLUDES = -I/Users/patrick/Dev/COMP426/lib/glad/include
 
 C_FLAGSarm64 =  -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk -Wall -Wextra -Wpedantic -O3 -march=native
 

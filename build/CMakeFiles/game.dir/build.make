@@ -53,10 +53,10 @@ RM = /opt/homebrew/Cellar/cmake/3.30.3/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/patrick/Dev/COMP426_A1
+CMAKE_SOURCE_DIR = /Users/patrick/Dev/COMP426
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/patrick/Dev/COMP426_A1/build
+CMAKE_BINARY_DIR = /Users/patrick/Dev/COMP426/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/game.dir/depend.make
@@ -70,32 +70,32 @@ include CMakeFiles/game.dir/progress.make
 include CMakeFiles/game.dir/flags.make
 
 CMakeFiles/game.dir/src/main.cpp.o: CMakeFiles/game.dir/flags.make
-CMakeFiles/game.dir/src/main.cpp.o: /Users/patrick/Dev/COMP426_A1/src/main.cpp
+CMakeFiles/game.dir/src/main.cpp.o: /Users/patrick/Dev/COMP426/src/main.cpp
 CMakeFiles/game.dir/src/main.cpp.o: CMakeFiles/game.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/patrick/Dev/COMP426_A1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/game.dir/src/main.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/game.dir/src/main.cpp.o -MF CMakeFiles/game.dir/src/main.cpp.o.d -o CMakeFiles/game.dir/src/main.cpp.o -c /Users/patrick/Dev/COMP426_A1/src/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/patrick/Dev/COMP426/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/game.dir/src/main.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/game.dir/src/main.cpp.o -MF CMakeFiles/game.dir/src/main.cpp.o.d -o CMakeFiles/game.dir/src/main.cpp.o -c /Users/patrick/Dev/COMP426/src/main.cpp
 
 CMakeFiles/game.dir/src/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/game.dir/src/main.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/patrick/Dev/COMP426_A1/src/main.cpp > CMakeFiles/game.dir/src/main.cpp.i
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/patrick/Dev/COMP426/src/main.cpp > CMakeFiles/game.dir/src/main.cpp.i
 
 CMakeFiles/game.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/game.dir/src/main.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/patrick/Dev/COMP426_A1/src/main.cpp -o CMakeFiles/game.dir/src/main.cpp.s
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/patrick/Dev/COMP426/src/main.cpp -o CMakeFiles/game.dir/src/main.cpp.s
 
 CMakeFiles/game.dir/src/sim.cpp.o: CMakeFiles/game.dir/flags.make
-CMakeFiles/game.dir/src/sim.cpp.o: /Users/patrick/Dev/COMP426_A1/src/sim.cpp
+CMakeFiles/game.dir/src/sim.cpp.o: /Users/patrick/Dev/COMP426/src/sim.cpp
 CMakeFiles/game.dir/src/sim.cpp.o: CMakeFiles/game.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/patrick/Dev/COMP426_A1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/game.dir/src/sim.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/game.dir/src/sim.cpp.o -MF CMakeFiles/game.dir/src/sim.cpp.o.d -o CMakeFiles/game.dir/src/sim.cpp.o -c /Users/patrick/Dev/COMP426_A1/src/sim.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/patrick/Dev/COMP426/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/game.dir/src/sim.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/game.dir/src/sim.cpp.o -MF CMakeFiles/game.dir/src/sim.cpp.o.d -o CMakeFiles/game.dir/src/sim.cpp.o -c /Users/patrick/Dev/COMP426/src/sim.cpp
 
 CMakeFiles/game.dir/src/sim.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/game.dir/src/sim.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/patrick/Dev/COMP426_A1/src/sim.cpp > CMakeFiles/game.dir/src/sim.cpp.i
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/patrick/Dev/COMP426/src/sim.cpp > CMakeFiles/game.dir/src/sim.cpp.i
 
 CMakeFiles/game.dir/src/sim.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/game.dir/src/sim.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/patrick/Dev/COMP426_A1/src/sim.cpp -o CMakeFiles/game.dir/src/sim.cpp.s
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/patrick/Dev/COMP426/src/sim.cpp -o CMakeFiles/game.dir/src/sim.cpp.s
 
 # Object files for target game
 game_OBJECTS = \
@@ -108,11 +108,12 @@ game_EXTERNAL_OBJECTS =
 game: CMakeFiles/game.dir/src/main.cpp.o
 game: CMakeFiles/game.dir/src/sim.cpp.o
 game: CMakeFiles/game.dir/build.make
-game: libglad.a
+game: /opt/homebrew/opt/tbb/lib/libtbb.12.16.dylib
 game: /opt/homebrew/opt/glfw/lib/libglfw.3.4.dylib
 game: /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/System/Library/Frameworks/OpenGL.framework
+game: libglad.a
 game: CMakeFiles/game.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/patrick/Dev/COMP426_A1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable game"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/patrick/Dev/COMP426/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable game"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/game.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -124,6 +125,6 @@ CMakeFiles/game.dir/clean:
 .PHONY : CMakeFiles/game.dir/clean
 
 CMakeFiles/game.dir/depend:
-	cd /Users/patrick/Dev/COMP426_A1/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/patrick/Dev/COMP426_A1 /Users/patrick/Dev/COMP426_A1 /Users/patrick/Dev/COMP426_A1/build /Users/patrick/Dev/COMP426_A1/build /Users/patrick/Dev/COMP426_A1/build/CMakeFiles/game.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /Users/patrick/Dev/COMP426/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/patrick/Dev/COMP426 /Users/patrick/Dev/COMP426 /Users/patrick/Dev/COMP426/build /Users/patrick/Dev/COMP426/build /Users/patrick/Dev/COMP426/build/CMakeFiles/game.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/game.dir/depend
 

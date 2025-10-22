@@ -53,10 +53,10 @@ RM = /opt/homebrew/Cellar/cmake/3.30.3/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/patrick/Dev/COMP426_A1
+CMAKE_SOURCE_DIR = /Users/patrick/Dev/COMP426
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/patrick/Dev/COMP426_A1/build
+CMAKE_BINARY_DIR = /Users/patrick/Dev/COMP426/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/glad.dir/depend.make
@@ -70,18 +70,18 @@ include CMakeFiles/glad.dir/progress.make
 include CMakeFiles/glad.dir/flags.make
 
 CMakeFiles/glad.dir/lib/glad/src/glad.c.o: CMakeFiles/glad.dir/flags.make
-CMakeFiles/glad.dir/lib/glad/src/glad.c.o: /Users/patrick/Dev/COMP426_A1/lib/glad/src/glad.c
+CMakeFiles/glad.dir/lib/glad/src/glad.c.o: /Users/patrick/Dev/COMP426/lib/glad/src/glad.c
 CMakeFiles/glad.dir/lib/glad/src/glad.c.o: CMakeFiles/glad.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/patrick/Dev/COMP426_A1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/glad.dir/lib/glad/src/glad.c.o"
-	/Library/Developer/CommandLineTools/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/glad.dir/lib/glad/src/glad.c.o -MF CMakeFiles/glad.dir/lib/glad/src/glad.c.o.d -o CMakeFiles/glad.dir/lib/glad/src/glad.c.o -c /Users/patrick/Dev/COMP426_A1/lib/glad/src/glad.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/patrick/Dev/COMP426/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/glad.dir/lib/glad/src/glad.c.o"
+	/Library/Developer/CommandLineTools/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/glad.dir/lib/glad/src/glad.c.o -MF CMakeFiles/glad.dir/lib/glad/src/glad.c.o.d -o CMakeFiles/glad.dir/lib/glad/src/glad.c.o -c /Users/patrick/Dev/COMP426/lib/glad/src/glad.c
 
 CMakeFiles/glad.dir/lib/glad/src/glad.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/glad.dir/lib/glad/src/glad.c.i"
-	/Library/Developer/CommandLineTools/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/patrick/Dev/COMP426_A1/lib/glad/src/glad.c > CMakeFiles/glad.dir/lib/glad/src/glad.c.i
+	/Library/Developer/CommandLineTools/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/patrick/Dev/COMP426/lib/glad/src/glad.c > CMakeFiles/glad.dir/lib/glad/src/glad.c.i
 
 CMakeFiles/glad.dir/lib/glad/src/glad.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/glad.dir/lib/glad/src/glad.c.s"
-	/Library/Developer/CommandLineTools/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/patrick/Dev/COMP426_A1/lib/glad/src/glad.c -o CMakeFiles/glad.dir/lib/glad/src/glad.c.s
+	/Library/Developer/CommandLineTools/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/patrick/Dev/COMP426/lib/glad/src/glad.c -o CMakeFiles/glad.dir/lib/glad/src/glad.c.s
 
 # Object files for target glad
 glad_OBJECTS = \
@@ -93,7 +93,7 @@ glad_EXTERNAL_OBJECTS =
 libglad.a: CMakeFiles/glad.dir/lib/glad/src/glad.c.o
 libglad.a: CMakeFiles/glad.dir/build.make
 libglad.a: CMakeFiles/glad.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/patrick/Dev/COMP426_A1/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C static library libglad.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/patrick/Dev/COMP426/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C static library libglad.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/glad.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/glad.dir/link.txt --verbose=$(VERBOSE)
 
@@ -106,6 +106,6 @@ CMakeFiles/glad.dir/clean:
 .PHONY : CMakeFiles/glad.dir/clean
 
 CMakeFiles/glad.dir/depend:
-	cd /Users/patrick/Dev/COMP426_A1/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/patrick/Dev/COMP426_A1 /Users/patrick/Dev/COMP426_A1 /Users/patrick/Dev/COMP426_A1/build /Users/patrick/Dev/COMP426_A1/build /Users/patrick/Dev/COMP426_A1/build/CMakeFiles/glad.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /Users/patrick/Dev/COMP426/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/patrick/Dev/COMP426 /Users/patrick/Dev/COMP426 /Users/patrick/Dev/COMP426/build /Users/patrick/Dev/COMP426/build /Users/patrick/Dev/COMP426/build/CMakeFiles/glad.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/glad.dir/depend
 

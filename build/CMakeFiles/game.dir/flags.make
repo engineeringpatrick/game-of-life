@@ -4,7 +4,7 @@
 # compile CXX with /Library/Developer/CommandLineTools/usr/bin/c++
 CXX_DEFINES = -DMAC_OS_X_VERSION_MIN_REQUIRED=101500
 
-CXX_INCLUDES = -I/Users/patrick/Dev/COMP426_A1/lib/glad/include -I/Users/patrick/Dev/COMP426_A1/src -isystem /opt/homebrew/opt/glfw/include -iframework /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/System/Library/Frameworks
+CXX_INCLUDES = -I/Users/patrick/Dev/COMP426/lib/glad/include -I/Users/patrick/Dev/COMP426/src -isystem /opt/homebrew/opt/tbb/include -isystem /opt/homebrew/opt/glfw/include -iframework /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/System/Library/Frameworks
 
 CXX_FLAGSarm64 = -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk -Wall -Wextra -Wpedantic -O3 -march=native
 

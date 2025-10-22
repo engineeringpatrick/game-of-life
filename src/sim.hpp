@@ -19,30 +19,22 @@ struct SimConfig {
 class Sim {
 public:
     explicit Sim(const SimConfig& cfg);
+    
+    // main thread calls this once per frame
+    void update_frame_tbb();
 
-    // called by worker threads: process [y0, y1) rows for all species
-    void step_rows(int y0, int y1);
-
-    // main thread joins the barrier once per frame; completion swaps buffers
-    void join_barrier();
-
-    // convert current state -> RGBA8 pixel buffer (species draw priority: higher ID wins)
+    // convert current state -> RGBA8 pixel buffer (if contenders we choose random species)
     void blit_rgba(std::vector<unsigned char>& out_rgba);
 
-    void stop();                      
-    bool running() const { return running_.load(); }
+    void swap_buffers(); // called by barrier completion
 
     int W() const { return W_; }
     int H() const { return H_; }
     int S() const { return S_; }
-
-    std::barrier<>* barrier = nullptr; // set by main
-
-    void swap_buffers(); // called by barrier completion
     
 private:
-    int W_, H_, S_, T_ [[maybe_unused]];                // width, height, species, worker threads
-    std::atomic<bool> running_{true};
+    int W_, H_, S_;            // width, height, species
+    static std::mt19937 gen_;
 
     // double buffers (read from curr, write to next)
     std::vector<std::vector<uint8_t>> layers_curr_; // 0 or 1
@@ -57,7 +49,7 @@ private:
         int c = 0;
         // 8 neighbors
         c += get(layer, x-1,y-1); c += get(layer, x,y-1); c += get(layer, x+1,y-1);
-        c += get(layer, x-1,y  );                          c += get(layer, x+1,y  );
+        c += get(layer, x-1,y  );                         c += get(layer, x+1,y  );
         c += get(layer, x-1,y+1); c += get(layer, x,y+1); c += get(layer, x+1,y+1);
         return (uint8_t)c;
     }
