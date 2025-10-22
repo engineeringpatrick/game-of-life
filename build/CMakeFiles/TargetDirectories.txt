@@ -1,0 +1,4 @@
+/Users/patrick/Dev/COMP426_A1/build/CMakeFiles/glad.dir
+/Users/patrick/Dev/COMP426_A1/build/CMakeFiles/game.dir
+/Users/patrick/Dev/COMP426_A1/build/CMakeFiles/edit_cache.dir
+/Users/patrick/Dev/COMP426_A1/build/CMakeFiles/rebuild_cache.dir
