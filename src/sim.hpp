@@ -13,7 +13,7 @@ struct SimConfig {
     int species = 6;                  
     int workers = std::max(1u, std::thread::hardware_concurrency());
     unsigned seed = 12345;            
-    float init_density = 0.08f; // parsity at the start
+    float init_density = 0.08f; // cannot be 100% ??
 };
 
 class Sim {
@@ -26,7 +26,7 @@ public:
     // convert current state -> RGBA8 pixel buffer (if contenders we choose random species)
     void blit_rgba(std::vector<unsigned char>& out_rgba);
 
-    void swap_buffers(); // called by barrier completion
+    void swap_buffers();
 
     int W() const { return W_; }
     int H() const { return H_; }

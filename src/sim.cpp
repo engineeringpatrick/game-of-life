@@ -34,7 +34,7 @@ void Sim::update_frame_tbb() {
         auto& nxt = layers_next_[s];
 
         tbb::parallel_for(
-            tbb::blocked_range<int>(0, H_, 64),  // grain size 64 rows 
+            tbb::blocked_range<int>(0, H_), // auto partitioning
             [&](const tbb::blocked_range<int>& r){
                 for (int y = r.begin(); y < r.end(); ++y) {
                     int base = y * W_;
@@ -64,6 +64,7 @@ void Sim::blit_rgba(std::vector<unsigned char>& out_rgba) {
         return {c[0], c[1], c[2], 255};
     };
 
+    // todo: could parallelize this with tbb easily!
     for (int y = 0; y < H_; ++y) {
         for (int x = 0; x < W_; ++x) {
             int i = idx(x,y);
