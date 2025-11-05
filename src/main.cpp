@@ -78,9 +78,18 @@ static std::string load_file(const char* path) {
                        std::istreambuf_iterator<char>());
 }
 
+auto CheckCLError = [](cl_int err, const char* where) {
+    if (err != CL_SUCCESS) {
+        std::cerr << "[OpenCL ERROR] " << where
+                  << " failed with code " << err << std::endl;
+        std::exit(1); // stop immediately so we can see where
+    }
+};
+
+
 int main() {
     // --- config ---
-    const int W = 1024, H = 768, S = 6;
+    const int W = 1024, H = 768, S = 6; // width, height, species
     const int wrap = 1; // 1=toroidal, 0=clamp
 
     // --- GLFW/GL init ---
@@ -93,14 +102,13 @@ int main() {
     glfwSwapInterval(1);
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
-    // create GL texture (RGBA8)
+    // create gl texture (rgba8)
     GLuint tex=0; glGenTextures(1,&tex);
     glBindTexture(GL_TEXTURE_2D, tex);
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA8,W,H,0,GL_RGBA,GL_UNSIGNED_BYTE,nullptr);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 
-    // --- OpenCL context with GL sharing ---
     cl_int err=0;
 
     // pick platform/device
@@ -114,9 +122,6 @@ int main() {
     clGetDeviceIDs(plat, CL_DEVICE_TYPE_GPU, numDev, devs.data(), nullptr);
     cl_device_id dev = devs[0];
 
-    // GL sharing properties (macOS)
-    // Get the current CGL share group via NSOpenGL / CGL; GLFW uses NSOpenGL.
-    // On macOS, use cl_khr_gl_sharing with CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE.
     CGLContextObj cgl_ctx = CGLGetCurrentContext();
     CGLShareGroupObj share = CGLGetShareGroup(cgl_ctx);
     cl_context_properties cps[] = {
@@ -129,8 +134,14 @@ int main() {
     cl_command_queue q = clCreateCommandQueue(ctx, dev, 0, &err);
     assert(err==CL_SUCCESS);
 
-    // --- program / kernels ---
+    // --- program and kernels ---
     std::string src = load_file("kernels.cl");
+
+    if (src.empty()) {
+        std::cerr << "kernels.cl file not found or empty!\n";
+        return 1;
+    }
+
     const char* csrc = src.c_str();
     size_t srclen = src.size();
     cl_program clProg = clCreateProgramWithSource(ctx, 1, &csrc, &srclen, &err);
@@ -145,19 +156,22 @@ int main() {
     cl_kernel kUpdate = clCreateKernel(clProg, "life_update", &err);
     cl_kernel kBlit   = clCreateKernel(clProg, "blit_rgba",   &err);
 
-    // --- device buffers (curr/next) ---
+    CheckCLError(err, "clCreateKernel(life_update)");
+    CheckCLError(err, "clCreateKernel(blit_rgba)");
+
+    // device buffers (curr/next)
     size_t layerSize = W * H;
     size_t gridSize  = S * layerSize;
     cl_mem dCurr = clCreateBuffer(ctx, CL_MEM_READ_WRITE, gridSize, nullptr, &err);
     cl_mem dNext = clCreateBuffer(ctx, CL_MEM_READ_WRITE, gridSize, nullptr, &err);
 
-    // initialize: random (on host then upload) or all-alive etc.
+    // initialize: random (on host then upload) or others
     std::vector<unsigned char> init(gridSize, 0);
-    // e.g., sparse init:
+    // sparse init:
     for (size_t i=0;i<gridSize;++i) init[i] = (rand()%100 < 12) ? 1u : 0u;
     clEnqueueWriteBuffer(q, dCurr, CL_TRUE, 0, gridSize, init.data(), 0, nullptr, nullptr);
 
-    // --- make cl_mem from GL texture (no CPU copies) ---
+    // make cl_mem from GL texture (no cpu copies)
     cl_mem clTex = clCreateFromGLTexture(ctx, CL_MEM_WRITE_ONLY, GL_TEXTURE_2D, 0, tex, &err);
     assert(err==CL_SUCCESS);
 
@@ -175,13 +189,13 @@ int main() {
     clSetKernelArg(kBlit, 3, sizeof(int), &H);
     clSetKernelArg(kBlit, 4, sizeof(int), &S);
 
-    // --- make shader program ---
+    // make shader program
     GLuint glProg = make_program();
     glUseProgram(glProg);
     GLint uTexLoc = glGetUniformLocation(glProg, "uTex");
     glUniform1i(uTexLoc, 0); // sampler uses texture unit 0
 
-    // --- fullscreen quad (two triangles) ---
+    // fullscreen quad (two triangles)
     float quad[] = {
     // pos       // uv
     -1.f,-1.f,   0.f,0.f,
@@ -205,7 +219,7 @@ int main() {
 
     glBindVertexArray(0);
 
-    // --- frame loop ---
+    // FRAME LOOP
     using clock_t = std::chrono::steady_clock;
     const auto frame_dt = std::chrono::milliseconds(33);
 
@@ -217,19 +231,24 @@ int main() {
         clSetKernelArg(kUpdate, 0, sizeof(cl_mem), &dCurr);
         clSetKernelArg(kUpdate, 1, sizeof(cl_mem), &dNext);
         err = clEnqueueNDRangeKernel(q, kUpdate, 2, nullptr, gsz, nullptr, 0, nullptr, nullptr);
+        CheckCLError(err, "clEnqueueNDRangeKernel (kupdate)");
 
         // 2) swap device buffers (no copy)
         std::swap(dCurr, dNext);
 
-        // 3) fill GL texture on GPU (acquire → blit → release)
-        glFinish();  // ensure GL is done with the texture before CL uses it
-        clEnqueueAcquireGLObjects(q, 1, &clTex, 0, nullptr, nullptr);
+        // 3) fill GL texture on GPU (acquire -> blit -> release)
+        glFinish();  // ensure gl is done with the texture before cl uses it
+        err = clEnqueueAcquireGLObjects(q, 1, &clTex, 0, nullptr, nullptr);
+        CheckCLError(err, "clEnqueueAcquireGLObjects");
 
         clSetKernelArg(kBlit, 0, sizeof(cl_mem), &dCurr); // current is the display source
         err = clEnqueueNDRangeKernel(q, kBlit, 2, nullptr, gsz, nullptr, 0, nullptr, nullptr);
+        CheckCLError(err, "clEnqueueNDRangeKernel (kblit)");
 
-        clEnqueueReleaseGLObjects(q, 1, &clTex, 0, nullptr, nullptr);
-        clFinish(q); // ensure texture writes done before GL draws
+        err = clEnqueueReleaseGLObjects(q, 1, &clTex, 0, nullptr, nullptr);
+        CheckCLError(err, "clEnqueueReleaseGLObjects");
+        err = clFinish(q); // ensure texture writes done before GL draws
+        CheckCLError(err, "clFinish");
 
         // 4) draw quad with the texture
         glActiveTexture(GL_TEXTURE0);
@@ -253,6 +272,6 @@ int main() {
         std::this_thread::sleep_until(t0 + frame_dt); // ~30 FPS
     }
 
-    // cleanup (destroy kernels/buffers/ctx, GL cleanup)
+    // destroy everything and gl cleanup
     return 0;
 }

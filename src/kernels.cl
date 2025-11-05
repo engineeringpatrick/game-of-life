@@ -1,89 +1,75 @@
-// OpenCL 1.2
+// index helpers
+inline int idx2d(const int x, const int y, const int W) {
+    return y * W + x;
+}
+inline int idx3d(const int s, const int x, const int y, const int W, const int H) {
+    return s * (W * H) + idx2d(x, y, W);
+}
 
-// Wrap helper (toroidal) or clamp. Toggle via a #define or kernel arg.
-inline int wrapi(int a, int m) { int r = a % m; return r < 0 ? r + m : r; }
+// wrap or clamp coordinate
+inline int wrap_or_clamp(int v, int maxv, int wrap) {
+    return wrap ? ((v + maxv) % maxv) : clamp(v, 0, maxv - 1);
+}
 
+// conway step on S layers (each layer independent)
 __kernel void life_update(
-    __global const uchar* curr,   // S * W * H
-    __global uchar*       next,   // S * W * H
+    __global const uchar* curr,   // [S * W * H]
+    __global uchar*       next,   // [S * W * H]
     int W, int H, int S,
-    int wrap)                     // 0=clamp, 1=wrap
-{
-    int x = get_global_id(0);
-    int y = get_global_id(1);
+    int wrap                     // 1=toroidal, 0=clamp
+){
+    const int x = get_global_id(0);
+    const int y = get_global_id(1);
     if (x >= W || y >= H) return;
 
-    int idx2D = y * W + x;
-
-    // For each species, apply Life rule independently
+    // for each species/layer do a life step
     for (int s = 0; s < S; ++s) {
-        int base = s * (W * H);
-        int alive = curr[base + idx2D];
         int n = 0;
-
-        // neighbor loop (unrolled for clarity)
-        int xm1 = wrap ? wrapi(x-1,W) : (x>0 ? x-1 : -1);
-        int xp1 = wrap ? wrapi(x+1,W) : (x<W-1 ? x+1 : -1);
-        int ym1 = wrap ? wrapi(y-1,H) : (y>0 ? y-1 : -1);
-        int yp1 = wrap ? wrapi(y+1,H) : (y<H-1 ? y+1 : -1);
-
-        // helper to get with clamp
-        #define GET(xx,yy) (((xx)<0 || (yy)<0 || (xx)>=W || (yy)>=H) ? 0 : curr[base + (yy)*W + (xx)])
-
-        if (wrap) {
-            n += curr[base + ym1*W + xm1];
-            n += curr[base + ym1*W + x];
-            n += curr[base + ym1*W + xp1];
-            n += curr[base + y   *W + xm1];
-            n += curr[base + y   *W + xp1];
-            n += curr[base + yp1*W + xm1];
-            n += curr[base + yp1*W + x];
-            n += curr[base + yp1*W + xp1];
-        } else {
-            n += GET(xm1, ym1); n += GET(x, ym1); n += GET(xp1, ym1);
-            n += GET(xm1, y  );                 n += GET(xp1, y  );
-            n += GET(xm1, yp1); n += GET(x, yp1); n += GET(xp1, yp1);
+        // count 8 neighbors on same layer
+        for (int dy = -1; dy <= 1; ++dy) {
+            for (int dx = -1; dx <= 1; ++dx) {
+                if (dx == 0 && dy == 0) continue;
+                int xx = wrap_or_clamp(x + dx, W, wrap);
+                int yy = wrap_or_clamp(y + dy, H, wrap);
+                n += (int)curr[idx3d(s, xx, yy, W, H)];
+            }
         }
-        #undef GET
 
-        uchar out = alive ? (n==2 || n==3) : (n==3);
-        next[base + idx2D] = out;
+        const int base = idx3d(s, x, y, W, H);
+        const uchar alive = curr[base];
+        const uchar next_alive = (alive ? (n == 2 || n == 3) : (n == 3)) ? (uchar)1 : (uchar)0;
+        next[base] = next_alive;
     }
 }
 
-// Visualization LUT (8 colors). Expand if you have more species.
-constant uchar3 LUT[8] = {
-    (uchar3)(237, 28, 36), (uchar3)(255,127,39), (uchar3)(255,242,0),
-    (uchar3)(34,177,76),   (uchar3)(63,72,204),  (uchar3)(163,73,164),
-    (uchar3)(0,162,232),   (uchar3)(136,0,21)
-};
-
-// Writes directly into a GL-shared RGBA8 texture.
+// simple tint per species: cycle R/G/B and accumulate up to white
 __kernel void blit_rgba(
-    __global const uchar* curr,   // S * W * H
-    write_only image2d_t  outImg, // GL-shared texture (RGBA8)
-    int W, int H, int S)
-{
-    int x = get_global_id(0);
-    int y = get_global_id(1);
+    __global const uchar* curr,    // [S * W * H]
+    write_only image2d_t  outImg,  // gl-shared image
+    int W, int H, int S
+){
+    const int x = get_global_id(0);
+    const int y = get_global_id(1);
     if (x >= W || y >= H) return;
 
-    int idx2D = y * W + x;
-    int winner = -1;
+    float r = 0.0f, g = 0.0f, b = 0.0f;
 
-    // highest species id wins for display
     for (int s = 0; s < S; ++s) {
-        int base = s * (W * H);
-        if (curr[base + idx2D]) winner = s;
+        const uchar alive = curr[idx3d(s, x, y, W, H)];
+        if (!alive) continue;
+
+        const int c = s % 3;
+        if (c == 0) r += 1.0f;
+        else if (c == 1) g += 1.0f;
+        else b += 1.0f;
     }
 
-    uchar4 rgba = (uchar4)(0,0,0,255);
-    if (winner >= 0) {
-        uchar3 c = LUT[winner & 7];
-        rgba = (uchar4)(c.x, c.y, c.z, 255);
-    }
+    float brightness = 1.0f; // boost factor
+    float4 color = (float4)(clamp(r * brightness, 0.0f, 1.0f),
+                            clamp(g * brightness, 0.0f, 1.0f),
+                            clamp(b * brightness, 0.0f, 1.0f),
+                            1.0f);
 
-    int2 coord = (int2)(x, y);
-    float4 cf = (float4)((float)rgba.x/255.0f, (float)rgba.y/255.0f, (float)rgba.z/255.0f, 1.0f);
-    write_imagef(outImg, coord, cf);
+    const int2 coord = (int2)(x, y);
+    write_imagef(outImg, coord, color);
 }
