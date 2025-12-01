@@ -1,5 +1,3 @@
-// main.cpp — clean final version
-
 #ifndef GL_SILENCE_DEPRECATION
     #define GL_SILENCE_DEPRECATION
 #endif
@@ -19,7 +17,16 @@
 #include <thread>
 #include <vector>
 
+// fps tracking
+double update_accum = 0.0;
+double blit_accum = 0.0;
+double frame_accum = 0.0;
+int update_frames = 0;
+int blit_frames = 0;
+int frame_frames = 0;
+
 using SteadyClock = std::chrono::steady_clock;
+auto last_fps_time = SteadyClock::now();
 
 static const char* VS_SRC = R"(
 #version 330 core
@@ -232,13 +239,24 @@ int main() {
         // 1) compute next from curr
         clSetKernelArg(kUpdate, 0, sizeof(cl_mem), &dCurr);
         clSetKernelArg(kUpdate, 1, sizeof(cl_mem), &dNext);
+
+        auto upd_start = SteadyClock::now();
+
         err = clEnqueueNDRangeKernel(q, kUpdate, 2, nullptr, gsz, nullptr, 0, nullptr, nullptr);
         CheckCLError(err, "clEnqueueNDRangeKernel (kupdate)");
+
+        CheckCLError(clFinish(q), "clFinish(update)");
+
+        auto upd_end = SteadyClock::now();
+        double upd_ms = std::chrono::duration<double, std::milli>(upd_end - upd_start).count();
+        update_accum += upd_ms;
+        update_frames++;
 
         // 2) swap device buffers (no copy)
         std::swap(dCurr, dNext);
 
         // 3) fill GL texture on GPU (acquire -> blit -> release)
+        auto blit_start = SteadyClock::now();
         glFinish();  // ensure gl is done with the texture before cl uses it
         err = clEnqueueAcquireGLObjects(q, 1, &clTex, 0, nullptr, nullptr);
         CheckCLError(err, "clEnqueueAcquireGLObjects");
@@ -255,6 +273,11 @@ int main() {
         CheckCLError(err, "clEnqueueReleaseGLObjects");
         err = clFinish(q); // ensure texture writes done before GL draws
         CheckCLError(err, "clFinish");
+
+        auto blit_end = SteadyClock::now();
+        double blit_ms = std::chrono::duration<double, std::milli>(blit_end - blit_start).count();
+        blit_accum += blit_ms;
+        blit_frames++;
 
         // 4) draw quad with the texture
         glActiveTexture(GL_TEXTURE0);
@@ -275,10 +298,26 @@ int main() {
         glfwSwapBuffers(win);
         glfwPollEvents();
         
-        // auto now = clock_t::now();
-        // double dt = std::chrono::duration<double>(now-t0).count();
-        // double fps = 1.0/dt;
-        // std::cout << fps << std::endl;
+        auto now = SteadyClock::now();
+        double frame_ms = std::chrono::duration<double, std::milli>(now - t0).count();
+        frame_accum += frame_ms;
+        frame_frames++;
+        
+        if (std::chrono::duration<double>(now - last_fps_time).count() >= 1.0) {
+            double upd_fps  = 1000.0 / (update_accum / update_frames);
+            double blit_fps = 1000.0 / (blit_accum / blit_frames);
+            double frm_fps  = 1000.0 / (frame_accum / frame_frames);
+            
+            std::cout << "GPU Update FPS: " << upd_fps
+            << " | GPU Blit FPS: " << blit_fps
+            << " | Frame FPS: "    << frm_fps
+            << std::endl;
+            
+            update_accum = blit_accum = frame_accum = 0.0;
+            update_frames = blit_frames = frame_frames = 0;
+            last_fps_time = now;
+        }
+
         std::this_thread::sleep_until(t0 + frame_dt); // ~30 FPS
     }
 
