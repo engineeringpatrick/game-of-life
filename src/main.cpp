@@ -224,6 +224,8 @@ int main() {
     const auto frame_dt = std::chrono::milliseconds(33);
 
     size_t gsz[2] = { (size_t)W, (size_t)H };
+    cl_uint frameSeed = 0;
+
     while (!glfwWindowShouldClose(win)) {
         auto t0 = clock_t::now();
 
@@ -241,7 +243,11 @@ int main() {
         err = clEnqueueAcquireGLObjects(q, 1, &clTex, 0, nullptr, nullptr);
         CheckCLError(err, "clEnqueueAcquireGLObjects");
 
+        // update seed each frame
+        cl_uint seed = frameSeed++;
         clSetKernelArg(kBlit, 0, sizeof(cl_mem), &dCurr); // current is the display source
+        clSetKernelArg(kBlit, 5, sizeof(cl_uint), &seed);
+
         err = clEnqueueNDRangeKernel(q, kBlit, 2, nullptr, gsz, nullptr, 0, nullptr, nullptr);
         CheckCLError(err, "clEnqueueNDRangeKernel (kblit)");
 
