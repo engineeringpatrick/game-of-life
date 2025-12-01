@@ -88,11 +88,11 @@ auto CheckCLError = [](cl_int err, const char* where) {
 
 
 int main() {
-    // --- config ---
+    // config
     const int W = 1024, H = 768, S = 6; // width, height, species
-    const int wrap = 1; // 1=toroidal, 0=clamp
+    const int wrap = 0;
 
-    // --- GLFW/GL init ---
+    // GLFW/GL init 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,3);
@@ -134,7 +134,7 @@ int main() {
     cl_command_queue q = clCreateCommandQueue(ctx, dev, 0, &err);
     assert(err==CL_SUCCESS);
 
-    // --- program and kernels ---
+    // program and kernels
     std::string src = load_file("kernels.cl");
 
     if (src.empty()) {
@@ -268,7 +268,11 @@ int main() {
 
         glfwSwapBuffers(win);
         glfwPollEvents();
-
+        
+        // auto now = clock_t::now();
+        // double dt = std::chrono::duration<double>(now-t0).count();
+        // double fps = 1.0/dt;
+        // std::cout << fps << std::endl;
         std::this_thread::sleep_until(t0 + frame_dt); // ~30 FPS
     }
 

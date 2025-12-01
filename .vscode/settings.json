@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.cl": "opencl",
         "__bit_reference": "cpp",
         "__split_buffer": "cpp",
         "barrier": "cpp",
@@ -47,6 +48,7 @@
         "streambuf": "cpp",
         "string_view": "cpp",
         "unordered_map": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "iostream": "cpp"
     }
 }

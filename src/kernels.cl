@@ -6,7 +6,6 @@ inline int idx3d(const int s, const int x, const int y, const int W, const int H
     return s * (W * H) + idx2d(x, y, W);
 }
 
-// wrap or clamp coordinate
 inline int wrap_or_clamp(int v, int maxv, int wrap) {
     return wrap ? ((v + maxv) % maxv) : clamp(v, 0, maxv - 1);
 }
@@ -16,7 +15,7 @@ __kernel void life_update(
     __global const uchar* curr,   // [S * W * H]
     __global uchar*       next,   // [S * W * H]
     int W, int H, int S,
-    int wrap                     // 1=toroidal, 0=clamp
+    int wrap                     
 ){
     const int x = get_global_id(0);
     const int y = get_global_id(1);
@@ -53,6 +52,8 @@ __kernel void blit_rgba(
     if (x >= W || y >= H) return;
 
     float r = 0.0f, g = 0.0f, b = 0.0f;
+    
+    // TODO: SELECT A WINNER AT RANDOM!
 
     for (int s = 0; s < S; ++s) {
         const uchar alive = curr[idx3d(s, x, y, W, H)];
