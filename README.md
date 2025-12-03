@@ -1,4 +1,13 @@
 ### Dev Steps
-`cmake -S . -B build` generate Makefile
-`cmake --build build -j` run Makefile
-`./build/game` run game
+generate Makefile
+```text
+cmake -S . -B build
+```
+run Makefile
+```text 
+cmake --build build -j
+``` 
+run game
+```text
+./build/game
+```
